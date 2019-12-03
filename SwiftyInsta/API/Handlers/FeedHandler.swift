@@ -10,26 +10,26 @@ import Foundation
 
 public final class FeedHandler: Handler {
     /// Fetch the explore feed.
-    public func explore(with paginationParameters: PaginationParameters,
+    public func explore(with paginationParameters: Bookmark,
                         updateHandler: PaginationUpdateHandler<ExploreElement, AnyPaginatedResponse>?,
                         completionHandler: @escaping PaginationCompletionHandler<ExploreElement>) {
         pages.request(ExploreElement.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoint.Discover.explore.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Discover.explore.next($0.maxId) },
                       splice: { $0.rawResponse.items.array?.compactMap(ExploreElement.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
     }
 
     /// Fetch the liked feed.
-    public func liked(with paginationParameters: PaginationParameters,
+    public func liked(with paginationParameters: Bookmark,
                       updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
                       completionHandler: @escaping PaginationCompletionHandler<Media>) {
         pages.request(Media.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoint.Feed.liked.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Feed.liked.next($0.maxId) },
                       splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -37,20 +37,20 @@ public final class FeedHandler: Handler {
 
     /// Fetch the tag feed.
     public func tag(_ tag: String,
-                    with paginationParameters: PaginationParameters,
+                    with paginationParameters: Bookmark,
                     updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
                     completionHandler: @escaping PaginationCompletionHandler<Media>) {
         pages.request(Media.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoint.Feed.tag.tag(tag).next($0.nextMaxId) },
+                      endpoint: { Endpoint.Feed.tag.tag(tag).next($0.maxId) },
                       splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
     }
 
     /// Fetch the timeline.
-    public func timeline(with paginationParameters: PaginationParameters,
+    public func timeline(with paginationParameters: Bookmark,
                          updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
                          completionHandler: @escaping PaginationCompletionHandler<Media>) {
         guard let storage = handler.response?.storage else {
@@ -86,9 +86,9 @@ public final class FeedHandler: Handler {
         pages.request(Media.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoint.Feed.timeline.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Feed.timeline.next($0.maxId) },
                       body: {
-                        switch $0.nextMaxId {
+                        switch $0.maxId {
                         case .none:
                             return .parameters(body.merging(["reason": "cold_start_fresh"],
                                                             uniquingKeysWith: { lhs, _ in lhs }))

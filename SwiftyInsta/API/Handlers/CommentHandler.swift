@@ -13,13 +13,13 @@ import Foundation
 public final class CommentHandler: Handler {
     /// Fetch all comments for media.
     public func all(forMedia mediaId: String,
-                    with paginationParameters: PaginationParameters,
+                    with paginationParameters: Bookmark,
                     updateHandler: PaginationUpdateHandler<Comment, MediaComments>?,
                     completionHandler: @escaping PaginationCompletionHandler<Comment>) {
         pages.request(Comment.self,
                       page: MediaComments.self,
                       with: paginationParameters,
-                      endpoint: { Endpoint.Media.comments.media(mediaId).next($0.nextMaxId) },
+                      endpoint: { Endpoint.Media.comments.media(mediaId).next($0.maxId) },
                       splice: { $0.rawResponse.comments.array?.compactMap(Comment.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)

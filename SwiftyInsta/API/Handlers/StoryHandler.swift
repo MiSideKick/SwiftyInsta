@@ -194,13 +194,13 @@ public final class StoryHandler: Handler {
 
     /// Get story viewers.
     public func viewers(forStory storyId: String,
-                        with paginationParameters: PaginationParameters,
+                        with paginationParameters: Bookmark,
                         updateHandler: PaginationUpdateHandler<User, StoryViewers>?,
                         completionHandler: @escaping PaginationCompletionHandler<User>) {
         pages.request(User.self,
                       page: StoryViewers.self,
                       with: paginationParameters,
-                      endpoint: { Endpoint.Media.storyViewers.media(storyId).next($0.nextMaxId) },
+                      endpoint: { Endpoint.Media.storyViewers.media(storyId).next($0.maxId) },
                       splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -304,13 +304,13 @@ public final class StoryHandler: Handler {
     }
 
     /// Get reels archive.
-    public func archive(with paginationParameters: PaginationParameters,
+    public func archive(with paginationParameters: Bookmark,
                         updateHandler: PaginationUpdateHandler<TrayArchive, AnyPaginatedResponse>?,
                         completionHandler: @escaping PaginationCompletionHandler<TrayArchive>) {
         pages.request(TrayArchive.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoint.Archive.stories.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Archive.stories.next($0.maxId) },
                       splice: { $0.rawResponse.items.array?.compactMap(TrayArchive.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)

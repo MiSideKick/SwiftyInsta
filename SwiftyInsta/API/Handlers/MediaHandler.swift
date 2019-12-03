@@ -23,7 +23,7 @@ public enum MediaType: String {
 public final class MediaHandler: Handler {
     /// Get user media.
     public func by(user: User.Reference,
-                   with paginationParameters: PaginationParameters,
+                   with paginationParameters: Bookmark,
                    updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
                    completionHandler: @escaping PaginationCompletionHandler<Media>) {
         switch user {
@@ -57,7 +57,7 @@ public final class MediaHandler: Handler {
             pages.request(Media.self,
                           page: AnyPaginatedResponse.self,
                           with: paginationParameters,
-                          endpoint: { Endpoint.Feed.user.user(pk).next($0.nextMaxId) },
+                          endpoint: { Endpoint.Feed.user.user(pk).next($0.maxId) },
                           splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
                           update: updateHandler,
                           completion: completionHandler)
@@ -68,7 +68,7 @@ public final class MediaHandler: Handler {
     public func info(for mediaId: String, completionHandler: @escaping (Result<Media?, Error>) -> Void) {
         pages.request(Media.self,
                       page: AnyPaginatedResponse.self,
-                      with: .init(maxPagesToLoad: 1),
+                      with: .first,
                       endpoint: { _ in Endpoint.Media.info.media(mediaId) },
                       splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
                       update: nil,
@@ -536,13 +536,13 @@ public final class MediaHandler: Handler {
 
     /// Get media likers.
     public func likers(ofMedia mediaId: String,
-                       with paginationParameters: PaginationParameters,
+                       with paginationParameters: Bookmark,
                        updateHandler: PaginationUpdateHandler<User, AnyPaginatedResponse>?,
                        completionHandler: @escaping PaginationCompletionHandler<User>) {
         pages.request(User.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoint.Media.likers.media(mediaId).next($0.nextMaxId) },
+                      endpoint: { Endpoint.Media.likers.media(mediaId).next($0.maxId) },
                       splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)

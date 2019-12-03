@@ -11,13 +11,13 @@ import Foundation
 
 public final class MessageHandler: Handler {
     /// Get the user's inbox.
-    public func inbox(with paginationParameters: PaginationParameters,
+    public func inbox(with paginationParameters: Bookmark,
                       updateHandler: PaginationUpdateHandler<Thread, AnyPaginatedResponse>?,
                       completionHandler: @escaping PaginationCompletionHandler<Thread>) {
         pages.request(Thread.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoint.Direct.inbox.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Direct.inbox.next($0.maxId) },
                       splice: { $0.rawResponse.inbox.threads.array?.compactMap(Thread.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -52,7 +52,7 @@ public final class MessageHandler: Handler {
     public func recent(completionHandler: @escaping (Result<[Recipient], Error>) -> Void) {
         pages.request(Recipient.self,
                       page: AnyPaginatedResponse.self,
-                      with: .init(maxPagesToLoad: 1),
+                      with: .first,
                       endpoint: { _ in Endpoint.Direct.recentRecipients },
                       splice: { $0.rawResponse.recentRecipients.array?.compactMap(Recipient.init) ?? [] },
                       update: nil) { result, _ in
@@ -64,7 +64,7 @@ public final class MessageHandler: Handler {
     public func ranked(completionHandler: @escaping (Result<[Recipient], Error>) -> Void) {
         pages.request(Recipient.self,
                       page: AnyPaginatedResponse.self,
-                      with: .init(maxPagesToLoad: 1),
+                      with: .first,
                       endpoint: { _ in Endpoint.Direct.rankedRecipients },
                       splice: { $0.rawResponse.rankedRecipients.array?.compactMap(Recipient.init) ?? [] },
                       update: nil) { result, _ in

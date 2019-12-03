@@ -104,7 +104,7 @@ public final class UserHandler: Handler {
 
         pages.request(User.self,
                       page: AnyPaginatedResponse.self,
-                      with: .init(maxPagesToLoad: 1),
+                      with: .first,
                       endpoint: { _ in Endpoint.Users.search.q(query) },
                       headers: { _ in headers },
                       splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
@@ -138,7 +138,7 @@ public final class UserHandler: Handler {
 
     /// Get user's tagged posts.
     public func tagged(user: User.Reference,
-                       with paginationParameters: PaginationParameters,
+                       with paginationParameters: Bookmark,
                        updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
                        completionHandler: @escaping PaginationCompletionHandler<Media>) {
         guard let storage = handler.response?.storage else {
@@ -176,7 +176,7 @@ public final class UserHandler: Handler {
             pages.request(Media.self,
                           page: AnyPaginatedResponse.self,
                           with: paginationParameters,
-                          endpoint: { Endpoint.UserTags.feed.user(pk).rank(storage.rankToken).next($0.nextMaxId) },
+                          endpoint: { Endpoint.UserTags.feed.user(pk).rank(storage.rankToken).next($0.maxId) },
                           splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
                           update: updateHandler,
                           completion: completionHandler)
@@ -186,7 +186,7 @@ public final class UserHandler: Handler {
     /// Get `user`'s **followers**.
     public func following(user: User.Reference,
                           usersMatchinQuery query: String? = nil,
-                          with paginationParameters: PaginationParameters,
+                          with paginationParameters: Bookmark,
                           updateHandler: PaginationUpdateHandler<User, AnyPaginatedResponse>?,
                           completionHandler: @escaping PaginationCompletionHandler<User>) {
         guard let storage = handler.response?.storage else {
@@ -228,7 +228,7 @@ public final class UserHandler: Handler {
                           endpoint: { Endpoint.Friendships.followers.user(pk)
                             .rank(storage.rankToken)
                             .query(query)
-                            .next($0.nextMaxId) },
+                            .next($0.maxId) },
                         splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
                         update: updateHandler,
                         completion: completionHandler)
@@ -238,7 +238,7 @@ public final class UserHandler: Handler {
     /// Get  accounts followed by`user` (**following**).
     public func followed(byUser user: User.Reference,
                          usersMatchinQuery query: String? = nil,
-                         with paginationParameters: PaginationParameters,
+                         with paginationParameters: Bookmark,
                          updateHandler: PaginationUpdateHandler<User, AnyPaginatedResponse>?,
                          completionHandler: @escaping PaginationCompletionHandler<User>) {
         guard let storage = handler.response?.storage else {
@@ -280,7 +280,7 @@ public final class UserHandler: Handler {
                           endpoint: { Endpoint.Friendships.folllowing.user(pk)
                             .rank(storage.rankToken)
                             .query(query)
-                            .next($0.nextMaxId) },
+                            .next($0.maxId) },
                         splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
                         update: updateHandler,
                         completion: completionHandler)
@@ -288,13 +288,13 @@ public final class UserHandler: Handler {
     }
 
     /// Get recent activities.
-    public func recentActivities(with paginationParameters: PaginationParameters,
+    public func recentActivities(with paginationParameters: Bookmark,
                                  updateHandler: PaginationUpdateHandler<SuggestedUser, RecentActivity>?,
                                  completionHandler: @escaping PaginationCompletionHandler<SuggestedUser>) {
             pages.request(SuggestedUser.self,
                           page: RecentActivity.self,
                           with: paginationParameters,
-                          endpoint: { Endpoint.News.activities.next($0.nextMaxId) },
+                          endpoint: { Endpoint.News.activities.next($0.maxId) },
                           next: { $0.aymf.nextMaxId.string },
                           splice: { $0.suggestedUsers },
                           update: updateHandler,
@@ -303,7 +303,7 @@ public final class UserHandler: Handler {
 
     @available(*, unavailable, message: "Instagram no longer supports this endpoint.")
     /// Get recent following activities.
-    public func recentFollowingActivities(with paginationParameters: PaginationParameters,
+    public func recentFollowingActivities(with paginationParameters: Bookmark,
                                           updateHandler: PaginationUpdateHandler<RecentActivity.Story, AnyPaginatedResponse>?,
                                           completionHandler: @escaping PaginationCompletionHandler<RecentActivity.Story>) {
         fatalError("Instagram no longer supports this endpoint.")
@@ -418,13 +418,13 @@ public final class UserHandler: Handler {
     }
 
     /// Get all pending friendship requests.
-    public func pendingRequests(with paginationParameters: PaginationParameters,
+    public func pendingRequests(with paginationParameters: Bookmark,
                                 updateHandler: PaginationUpdateHandler<User, AnyPaginatedResponse>?,
                                 completionHandler: @escaping PaginationCompletionHandler<User>) {
         pages.request(User.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoint.Friendships.pending.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Friendships.pending.next($0.maxId) },
                       splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -552,7 +552,7 @@ public final class UserHandler: Handler {
 
             pages.request([User.Reference: Friendship].self,
                           page: AnyPaginatedResponse.self,
-                          with: .init(maxPagesToLoad: 1),
+                          with: .first,
                           endpoint: { _ in Endpoint.Friendships.statuses },
                           body: { _ in .parameters(body) },
                           splice: {
@@ -572,13 +572,13 @@ public final class UserHandler: Handler {
     }
 
     /// Get blocked users.
-    public func blocked(with paginationParameters: PaginationParameters,
+    public func blocked(with paginationParameters: Bookmark,
                         updateHandler: PaginationUpdateHandler<User, AnyPaginatedResponse>?,
                         completionHandler: @escaping PaginationCompletionHandler<User>) {
         pages.request(User.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoint.Users.blocked.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Users.blocked.next($0.maxId) },
                       splice: { $0.rawResponse.blockedList.array?.compactMap(User.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)

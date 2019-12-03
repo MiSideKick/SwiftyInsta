@@ -58,21 +58,20 @@ public struct AnyPaginatedResponse: PaginatedResponse {
 public typealias PaginationUpdateHandler<R, P> = (
         _ update: P,
         _ inserting: [R],
-        _ nextParameters: PaginationParameters,
+        _ nextParameters: Bookmark,
         _ runningResponse: [R]
     ) -> Void
-public typealias LegacyPaginationUpdateHandler<R> = (_ update: R, _ nextParameters: PaginationParameters, _ runningResponse: [R]) -> Void
-public typealias PaginationCompletionHandler<R> = (_ response: Result<[R], Error>, _ nextParameters: PaginationParameters) -> Void
+public typealias PaginationCompletionHandler<R> = (_ response: Result<[R], Error>, _ nextParameters: Bookmark) -> Void
 
 class PaginationHelper: Handler {
     /// Get all pages matching criteria for `default` matching `ParsedResponse`.
     func request<Response, Page>(_ response: Response.Type,
                                  page: Page.Type,
-                                 with paginationParameters: PaginationParameters,
+                                 with paginationParameters: Bookmark,
                                  method: HTTPHelper.Method = .get,
-                                 endpoint: @escaping (PaginationParameters) -> EndpointRepresentable,
-                                 body: ((PaginationParameters) -> HTTPHelper.Body?)? = nil,
-                                 headers: ((PaginationParameters) -> [String: String]?)? = nil,
+                                 endpoint: @escaping (Bookmark) -> EndpointRepresentable,
+                                 body: ((Bookmark) -> HTTPHelper.Body?)? = nil,
+                                 headers: ((Bookmark) -> [String: String]?)? = nil,
                                  options: HTTPHelper.Options = [.validateResponse],
                                  delay: ClosedRange<Double>? = nil,
                                  next: @escaping (DynamicResponse) -> String? = { $0.nextMaxId.string },
@@ -98,11 +97,11 @@ class PaginationHelper: Handler {
     /// Get all pages matching criteria.
     func request<Response, Page>(_ response: Response.Type,
                                  page: Page.Type,
-                                 with paginationParameters: PaginationParameters,
+                                 with paginationParameters: Bookmark,
                                  method: HTTPHelper.Method = .get,
-                                 endpoint: @escaping (PaginationParameters) -> EndpointRepresentable,
-                                 body: ((PaginationParameters) -> HTTPHelper.Body?)? = nil,
-                                 headers: ((PaginationParameters) -> [String: String]?)? = nil,
+                                 endpoint: @escaping (Bookmark) -> EndpointRepresentable,
+                                 body: ((Bookmark) -> HTTPHelper.Body?)? = nil,
+                                 headers: ((Bookmark) -> [String: String]?)? = nil,
                                  options: HTTPHelper.Options = [.validateResponse],
                                  delay: ClosedRange<Double>? = nil,
                                  nextPage: @escaping (Page) -> String?,
@@ -111,7 +110,8 @@ class PaginationHelper: Handler {
                                  update: PaginationUpdateHandler<Response, Page>?,
                                  completion: @escaping PaginationCompletionHandler<Response>) {
         // check for valid pagination.
-        guard paginationParameters.canLoadMore else {
+        var reference = paginationParameters
+        guard reference.pagesToLoad > 0 else {
             return completion(.failure(GenericError.custom("Can't load more.")), paginationParameters)
         }
         guard let handler = handler else {
@@ -120,45 +120,43 @@ class PaginationHelper: Handler {
 
         // responses.
         var responses = [Response]()
-        let nextPaginationParameters = PaginationParameters(paginationParameters)
         // declare nested function to load current page.
         func requestNextPage() {
-            let endpoint = endpoint(nextPaginationParameters)
+            let endpoint = endpoint(reference)
             handler.requests.request(page,
                                      method: method,
                                      endpoint: endpoint,
-                                     body: body?(nextPaginationParameters),
-                                     headers: headers?(nextPaginationParameters),
+                                     body: body?(reference),
+                                     headers: headers?(reference),
                                      options: options,
                                      delay: delay,
                                      process: process) { [weak self] in
                                         guard let handler = self?.handler else {
-                                            return completion(.failure(GenericError.weakObjectReleased), nextPaginationParameters)
+                                            return completion(.failure(GenericError.weakObjectReleased), reference)
                                         }
                                         // deal with cases.
                                         switch $0 {
-                                        case .failure(let error): completion(.failure(error), nextPaginationParameters)
+                                        case .failure(let error): completion(.failure(error), reference)
                                         case .success(let page):
-                                            nextPaginationParameters.loadedPages += 1
                                             // splice items.
                                             let new = splice(page)
                                             responses.append(contentsOf: new)
                                             // notify if needed.
                                             handler.settings.queues.response.async {
-                                                update?(page, new, nextPaginationParameters, responses)
+                                                update?(page, new, reference, responses)
                                             }
                                             // load more.
-                                            guard nextPaginationParameters.canLoadMore else {
+                                            guard reference.pagesToLoad > 0 else {
                                                 return handler.settings.queues.response.async {
-                                                    completion(.success(responses), nextPaginationParameters)
+                                                    completion(.success(responses), reference)
                                                 }
                                             }
-                                            nextPaginationParameters.nextMaxId = nextPage(page)
-                                            guard !(nextPaginationParameters.nextMaxId ?? "").isEmpty else {
+                                            guard let nextReference = reference.next(nextPage(page)) else {
                                                 return handler.settings.queues.response.async {
-                                                    completion(.success(responses), nextPaginationParameters)
+                                                    completion(.success(responses), reference)
                                                 }
                                             }
+                                            reference = nextReference
                                             requestNextPage()
                                         }
             }
