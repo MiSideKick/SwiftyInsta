@@ -195,13 +195,9 @@ class HTTPHelper {
                 return completionHandler(.failure(GenericError.custom("`weak` reference was released.")))
             }
             // obtain the request.
-            var request = me.getDefaultRequest(for: content, method: body == nil ? method : .post)
-            me.addHeaders(to: &request, header: headers)
-            switch body {
-            case .parameters(let parameters)?: me.addBody(to: &request, body: parameters)
-            case .data(let data)?: request.httpBody = data
-            default: break
-            }
+            let request = URLRequest(url: content, method: body == nil ? method : .post, handler: handler)
+                .headers(headers)
+                .body(body)
             // start task.
             handler.settings.session.dataTask(with: request) { data, response, error in
                 handler.settings.queues.working.async {
@@ -213,35 +209,42 @@ class HTTPHelper {
             }.resume()
         }
     }
+}
 
-    func getDefaultRequest(for url: URL, method: Method) -> URLRequest {
-        var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 30)
-        request.httpMethod = method.rawValue
-        request.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: handler.response?.cookies ?? [])
-        request.addValue(Headers.acceptLanguageValue, forHTTPHeaderField: Headers.acceptLanguageKey)
-        request.addValue(Headers.igCapabilitiesValue, forHTTPHeaderField: Headers.igCapabilitiesKey)
-        request.addValue(Headers.igConnectionTypeValue, forHTTPHeaderField: Headers.igConnectionTypeKey)
-        request.addValue(Headers.contentTypeApplicationFormValue, forHTTPHeaderField: Headers.contentTypeKey)
-        request.addValue(Headers.userAgentValue, forHTTPHeaderField: Headers.userAgentKey)
+extension URLRequest {
+    /// Get the default request.
+    fileprivate init(url: URL, method: HTTPHelper.Method, handler: APIHandler) {
+        self.init(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 15)
+        self.httpMethod = method.rawValue
+        self.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: handler.response?.cookies ?? [])
+        self.addValue(Headers.acceptLanguageValue, forHTTPHeaderField: Headers.acceptLanguageKey)
+        self.addValue(Headers.igCapabilitiesValue, forHTTPHeaderField: Headers.igCapabilitiesKey)
+        self.addValue(Headers.igConnectionTypeValue, forHTTPHeaderField: Headers.igConnectionTypeKey)
+        self.addValue(Headers.contentTypeApplicationFormValue, forHTTPHeaderField: Headers.contentTypeKey)
+        self.addValue(Headers.userAgentValue, forHTTPHeaderField: Headers.userAgentKey)
         // remove old values and updates with new one.
-        handler.settings.headers.forEach { key, value in request.setValue(value, forHTTPHeaderField: key) }
+        handler.settings.headers.forEach { key, value in self.setValue(value, forHTTPHeaderField: key) }
+    }
+    
+    /// Update headers.
+    fileprivate func headers<S>(_ headers: [String: S]) -> URLRequest where S: LosslessStringConvertible {
+        var request = self
+        headers.forEach { request.allHTTPHeaderFields?.updateValue(String($0.value), forKey: $0.key) }
         return request
     }
-
-    fileprivate func addHeaders(to request: inout URLRequest, header: [String: String]) {
-        header.forEach { request.allHTTPHeaderFields?.updateValue($0.value, forKey: $0.key) }
-    }
-
-    fileprivate func addBody(to request: inout URLRequest, body: [String: Any]) {
-        if !body.isEmpty {
-            var queries: [String] = []
-            body.forEach { (parameterName, parameterValue) in
-                let query = "\(parameterName)=\(parameterValue)"
-                queries.append(query)
-            }
-
-            let data = queries.joined(separator: "&")
-            request.httpBody = data.data(using: String.Encoding.utf8)
+    
+    /// Set body.
+    fileprivate func body(_ body: HTTPHelper.Body?) -> URLRequest {
+        var request = self
+        switch body {
+        case .parameters(let parameters):
+            guard !parameters.isEmpty else { break }
+            request.httpBody = parameters.map { $0.key+"=\($0.value)" }.joined(separator: "&").data(using: .utf8)
+        case .data(let data):
+            request.httpBody = data
+        default:
+            request.httpBody = nil
         }
+        return request
     }
 }
