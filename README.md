@@ -126,12 +126,12 @@ All endpoints are easily accessible from your `APIHandler` instance.
 let handler: APIHandler = /* a valid, authenticated handler */
 // for instance you can…
 // …fetch your inbox.
-handler.messages.inbox(with: .init(maxPagesToLoad: .max),
+handler.messages.inbox(with: .everything,
                        updateHandler: nil,
                        completionHandler: { _, _ in /* do something */ })
 // …fetch all your followers.
 handler.users.following(user: .me,
-                        with: .init(maxPagesToLoad: .max),
+                        with: .everything,
                         updateHandler: nil,
                         completionHandler: { _, _ in /* do something */ })
 ```

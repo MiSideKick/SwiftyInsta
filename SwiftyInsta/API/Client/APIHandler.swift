@@ -16,7 +16,7 @@ public class Handler {
     init(handler: APIHandler) { self.handler = handler }
 
     /// The requests helper.
-    var requests: HTTPHelper { return handler.requests }
+    var requests: InstagramSession { return handler.requests }
     /// The pagination helper.
     var pages: PaginationHelper { return handler.pages }
 }
@@ -146,7 +146,7 @@ public class APIHandler {
 
     // MARK: Helpers
     /// Accessory for `HttpHelper(handler: self)`.
-    internal lazy var requests: HTTPHelper = .init(handler: self)
+    internal lazy var requests: InstagramSession = .init(handler: self)
     /// Accessory for `PaginationHelper(handler: self)`.
     internal lazy var pages: PaginationHelper = .init(handler: self)
 

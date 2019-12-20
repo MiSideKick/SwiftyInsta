@@ -8,53 +8,6 @@
 
 import Foundation
 
-public protocol PaginationProtocol {
-    associatedtype Identifier: Hashable & LosslessStringConvertible
-    var autoLoadMoreEnabled: Bool? { get }
-    var moreAvailable: Bool? { get }
-    var nextMaxId: Identifier? { get }
-    var numResults: Int? { get }
-}
-public extension PaginationProtocol {
-    var autoLoadMoreEnabled: Bool? { return nil }
-    var moreAvailable: Bool? { return nil }
-    var numResults: Int? { return nil }
-}
-
-public protocol NestedPaginationProtocol: PaginationProtocol {
-    static var nextMaxIdPath: KeyPath<Self, Identifier?> { get }
-}
-public extension NestedPaginationProtocol {
-    var nextMaxId: Identifier? { return self[keyPath: Self.nextMaxIdPath] }
-}
-
-protocol PaginatedResponse: ParsedResponse {
-    var nextMaxId: String? { get }
-}
-extension PaginatedResponse {
-    /// The `nextMaxId`.
-    var nextMaxId: String? { return rawResponse.nextMaxId.string }
-}
-public struct AnyPaginatedResponse: PaginatedResponse {
-    /// The `rawResponse`.
-    public var rawResponse: DynamicResponse
-
-    /// Init.
-    public init(rawResponse: DynamicResponse) {
-        self.rawResponse = rawResponse
-    }
-
-    // MARK: Codable
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
-    }
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(rawResponse.data())
-    }
-}
-
 public typealias PaginationUpdateHandler<R, P> = (
         _ update: P,
         _ inserting: [R],
@@ -68,11 +21,11 @@ class PaginationHelper: Handler {
     func request<Response, Page>(_ response: Response.Type,
                                  page: Page.Type,
                                  with paginationParameters: Bookmark,
-                                 method: HTTPHelper.Method = .get,
+                                 method: InstagramSession.Method = .get,
                                  endpoint: @escaping (Bookmark) -> EndpointRepresentable,
-                                 body: ((Bookmark) -> HTTPHelper.Body?)? = nil,
+                                 body: ((Bookmark) -> InstagramSession.Body?)? = nil,
                                  headers: ((Bookmark) -> [String: String]?)? = nil,
-                                 options: HTTPHelper.Options = [.validateResponse],
+                                 options: InstagramSession.Options = [.validateResponse],
                                  delay: ClosedRange<Double>? = nil,
                                  next: @escaping (DynamicResponse) -> String? = { $0.nextMaxId.string },
                                  process: @escaping (DynamicResponse) -> Page? = Page.init,
@@ -98,11 +51,11 @@ class PaginationHelper: Handler {
     func request<Response, Page>(_ response: Response.Type,
                                  page: Page.Type,
                                  with paginationParameters: Bookmark,
-                                 method: HTTPHelper.Method = .get,
+                                 method: InstagramSession.Method = .get,
                                  endpoint: @escaping (Bookmark) -> EndpointRepresentable,
-                                 body: ((Bookmark) -> HTTPHelper.Body?)? = nil,
+                                 body: ((Bookmark) -> InstagramSession.Body?)? = nil,
                                  headers: ((Bookmark) -> [String: String]?)? = nil,
-                                 options: HTTPHelper.Options = [.validateResponse],
+                                 options: InstagramSession.Options = [.validateResponse],
                                  delay: ClosedRange<Double>? = nil,
                                  nextPage: @escaping (Page) -> String?,
                                  process: @escaping (DynamicResponse) -> Page?,

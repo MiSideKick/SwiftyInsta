@@ -8,7 +8,6 @@
 //
 
 import Foundation
-// import Gzip
 
 /// An _abstract_ `class` providing reference for all `*Handler`s.
 class HTTPHelper {
@@ -26,7 +25,6 @@ class HTTPHelper {
     enum Body {
         case parameters([String: Any])
         case data(Data)
-        // case gzip([String: Any])
     }
     /// A list of options.
     struct Options: OptionSet {

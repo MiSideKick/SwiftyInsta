@@ -58,13 +58,13 @@ public struct User: IdentifiableParsedResponse {
     }
 
     /// The `phoneNumber` value.
-    public var phoneNumber: String? { return rawResponse.phoneNumber.string }
+    public var phoneNumber: String? { return rawResponse.publicPhoneNumber.string ?? rawResponse.phoneNumber.string }
     /// The `email` value.
-    public var email: String? { return rawResponse.emaill.string }
+    public var email: String? { return rawResponse.publicEmail.string ?? rawResponse.emaill.string }
     /// The `externalUrl` value.
     public var website: URL? { return rawResponse.externalUrl.url }
     /// The `byline` value.
-    public var byline: String? { return rawResponse.byline.string }
+    public var byline: String? { return rawResponse.category.string ?? rawResponse.byline.string }
     /// The `isBusiness` value.
     public var isBusiness: Bool? { return rawResponse.isBusiness.bool }
 

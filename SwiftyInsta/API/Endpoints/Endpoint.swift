@@ -23,7 +23,7 @@ public struct Endpoint {
     }
 
     /// An `enum` providing for `Accounts` endpoints.
-    enum Accounts: EndpointPath, CaseIterable, RawEndpointRepresentable {
+    public enum Accounts: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Create.
         case create = "https://i.instagram.com/api/v1/accounts/create/"
         /// Login.
@@ -57,13 +57,13 @@ public struct Endpoint {
     }
 
     /// An `enum` providing for `Archive` endpoints.
-    enum Archive: EndpointPath, CaseIterable, RawEndpointRepresentable {
+    public enum Archive: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Stories.
         case stories = "https://i.instagram.com/api/v1/archive/reel/day_shells/"
     }
 
     /// An `enum` providing for `Direct` endpoints.
-    enum Direct: EndpointPath, CaseIterable, RawEndpointRepresentable {
+    public enum Direct: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Inbox.
         case inbox = "https://i.instagram.com/api/v1/direct_v2/inbox/"
         /// Send message.
@@ -77,13 +77,13 @@ public struct Endpoint {
     }
 
     /// An `enum` providing for `Discover` endpoints.
-    enum Discover: EndpointPath, CaseIterable, RawEndpointRepresentable {
+    public enum Discover: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Explore.
         case explore = "https://i.instagram.com/api/v1/discover/explore/"
     }
 
     /// An `enum` providing for `Feed` endpoints.
-    enum Feed: EndpointPath, CaseIterable, RawEndpointRepresentable {
+    public enum Feed: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Story feed.
         case reelsTray = "https://i.instagram.com/api/v1/feed/reels_tray/"
         /// Reels media.
@@ -103,7 +103,7 @@ public struct Endpoint {
     }
 
     /// An `enum` providing for `Friendships` enddpoints.
-    enum Friendships: EndpointPath, CaseIterable, RawEndpointRepresentable {
+    public enum Friendships: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Following.
         case folllowing = "https://i.instagram.com/api/v1/friendships/{userPk}/following/"
         /// Followers.
@@ -131,13 +131,13 @@ public struct Endpoint {
     }
 
     /// An `enum` providing for `Highlights` endpoints.
-    enum Highlights: EndpointPath, CaseIterable, RawEndpointRepresentable {
+    public enum Highlights: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Highlights.
         case tray = "https://i.instagram.com/api/v1/highlights/{userPk}/highlights_tray/"
     }
 
     /// An `enum` providing for `Media` endpoints.
-    enum Media: EndpointPath, CaseIterable, RawEndpointRepresentable {
+    public enum Media: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Media info.
         case info = "https://i.instagram.com/api/v1/media/{mediaId}/info/"
         /// Like.
@@ -173,7 +173,7 @@ public struct Endpoint {
     }
 
     /// An `enum` provoding for `News` endpoints.
-    enum News: EndpointPath, CaseIterable, RawEndpointRepresentable {
+    public enum News: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Recent activities
         case activities = "https://i.instagram.com/api/v1/news/inbox/"
         /// Recent following activities.
@@ -181,7 +181,7 @@ public struct Endpoint {
     }
 
     /// An `enum` provoding for `Upload` endpoints.
-    enum Upload: EndpointPath, CaseIterable, RawEndpointRepresentable {
+    public enum Upload: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Photo.
         case photo = "https://i.instagram.com/api/v1/upload/photo/"
         /// Video.
@@ -189,7 +189,7 @@ public struct Endpoint {
     }
 
     /// An `enum` providing for `Users` endpoints.
-    enum Users: EndpointPath, CaseIterable, RawEndpointRepresentable {
+    public enum Users: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Search.
         case search = "https://i.instagram.com/api/v1/users/search/"
         /// Info.
@@ -201,7 +201,7 @@ public struct Endpoint {
     }
 
     /// An `enum` providing for `UserTags` endpoints.
-    enum UserTags: EndpointPath, CaseIterable, RawEndpointRepresentable {
+    public enum UserTags: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Feed.
         case feed = "https://i.instagram.com/api/v1/usertags/{userPk}/feed/"
     }
