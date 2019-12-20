@@ -10,7 +10,7 @@
 import Foundation
 
 /// An _abstract_ `class` providing reference for all `*Handler`s.
-class HTTPHelper {
+class InstagramSession {
     /// The completion response.
     typealias CompletionResult = Result<(Data?, HTTPURLResponse?), Error>
     /// The completion handller.
@@ -211,7 +211,7 @@ class HTTPHelper {
 
 extension URLRequest {
     /// Get the default request.
-    fileprivate init(url: URL, method: HTTPHelper.Method, handler: APIHandler) {
+    fileprivate init(url: URL, method: InstagramSession.Method, handler: APIHandler) {
         self.init(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 15)
         self.httpMethod = method.rawValue
         self.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: handler.response?.cookies ?? [])
@@ -232,7 +232,7 @@ extension URLRequest {
     }
     
     /// Set body.
-    fileprivate func body(_ body: HTTPHelper.Body?) -> URLRequest {
+    fileprivate func body(_ body: InstagramSession.Body?) -> URLRequest {
         var request = self
         switch body {
         case .parameters(let parameters):
