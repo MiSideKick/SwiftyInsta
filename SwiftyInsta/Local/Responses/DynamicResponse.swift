@@ -88,6 +88,9 @@ public enum DynamicResponse: Equatable {
     // MARK: Accessories
     /// Returned a beautified description.
     public var beautifiedDescription: String {
+        // check for `.none`.
+        guard self != .none else { return "" }
+        // deal with other types.
         let data: Data
         if #available(iOS 11, macOS 10.13, tvOS 11, watchOS 4, *) {
           data = (try? self.data(options: [.prettyPrinted, .sortedKeys])) ?? Data()
