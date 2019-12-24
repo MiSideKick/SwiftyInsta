@@ -24,10 +24,10 @@ import Combine
 @available(iOS 13, *)
 public extension EndpointRepresentable {
     /// Fetch results at `Endpoint`.
-    func fetch(_ handler: APIHandler) -> AnyPublisher<DynamicResponse, Error> {
+    func fetch(_ handler: APIHandler) -> Future<DynamicResponse, Error> {
         Future<DynamicResponse, Error> { resolve in
             self.fetch(handler) { resolve($0) }
-        }.eraseToAnyPublisher()
+        }
     }
 }
 #endif
