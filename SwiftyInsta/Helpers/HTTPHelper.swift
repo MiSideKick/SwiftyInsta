@@ -223,14 +223,14 @@ extension URLRequest {
         // remove old values and updates with new one.
         handler.settings.headers.forEach { key, value in self.setValue(value, forHTTPHeaderField: key) }
     }
-    
+
     /// Update headers.
     fileprivate func headers<S>(_ headers: [String: S]) -> URLRequest where S: LosslessStringConvertible {
         var request = self
         headers.forEach { request.allHTTPHeaderFields?.updateValue(String($0.value), forKey: $0.key) }
         return request
     }
-    
+
     /// Set body.
     fileprivate func body(_ body: InstagramSession.Body?) -> URLRequest {
         var request = self

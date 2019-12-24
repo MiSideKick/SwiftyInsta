@@ -8,11 +8,31 @@
 import Foundation
 
 public extension EndpointRepresentable {
+    /// Handle.
+    func handle(with handler: APIHandler) -> HandledEndpoint { .init(endpoint: self, handler: handler) }
+}
+
+/// A `struct` combining an endpoint and a the `APIHandler`.
+public class HandledEndpoint {
+    /// The endpoint.
+    var endpoint: EndpointRepresentable
+    /// The handler.
+    weak var handler: APIHandler?
+
+    /// Init.
+    init(endpoint: EndpointRepresentable, handler: APIHandler) {
+        self.endpoint = endpoint
+        self.handler = handler
+    }
+}
+
+public extension HandledEndpoint {
     /// Fetch results at `Endpoint`.
-    func fetch(_ handler: APIHandler, completion: @escaping (Result<DynamicResponse, Error>) -> Void) {
+    func fetch(completion: @escaping (Result<DynamicResponse, Error>) -> Void) {
+        guard let handler = handler else { return completion(.failure(GenericError.weakObjectReleased)) }
         handler.requests.request(DynamicResponse.self,
                                  method: .get,
-                                 endpoint: self,
+                                 endpoint: endpoint,
                                  process: { $0 },
                                  completion: completion)
     }
@@ -21,12 +41,20 @@ public extension EndpointRepresentable {
 #if canImport(Combine)
 import Combine
 
+/// A `struct` holding reference to a `Combine`-initiated response.
+public struct HandledResponse {
+    /// Request.
+    var request: HandledEndpoint
+    /// Response.
+    var response: DynamicResponse
+}
+
 @available(iOS 13, *)
-public extension EndpointRepresentable {
+public extension HandledEndpoint {
     /// Fetch results at `Endpoint`.
-    func fetch(_ handler: APIHandler) -> Future<DynamicResponse, Error> {
-        Future<DynamicResponse, Error> { resolve in
-            self.fetch(handler) { resolve($0) }
+    func fetch() -> Future<HandledResponse, Error> {
+        Future { resolve in
+            self.fetch { resolve($0.map { .init(request: self, response: $0) }) }
         }
     }
 }

@@ -53,4 +53,3 @@ public struct AnyPaginatedResponse: PaginatedResponse {
         try container.encode(rawResponse.data())
     }
 }
-

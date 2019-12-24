@@ -18,8 +18,8 @@ public struct Bookmark {
 
     // MARK: Lifecycle
     /// Init.
-    init(maxId: String?, count: Int) {
-        precondition(count > 0, "`count` must be bigger than `0`.")
+    init(maxId: String?, count counter: Int) {
+        precondition(counter > 0, "`count` must be bigger than `0`.")
         self.maxId = maxId
         self.pagesToLoad = count
     }
@@ -28,7 +28,7 @@ public struct Bookmark {
         guard let id = maxId, !id.isEmpty, pagesToLoad > 1 else { return nil }
         return .init(maxId: id, count: pagesToLoad-1)
     }
-    
+
     @available(*, deprecated, message: "Use `enum`-like `static` `func`s and `var`s instead (e.g. `.first`, `.upTo()`, `.everything`...).")
     /// Legacy initializer for `PaginationParameters`.
     /// Use `enum`-like `static` `func`s and `var`s instead (e.g. `.first`, `.upTo()`, `.everything`...).

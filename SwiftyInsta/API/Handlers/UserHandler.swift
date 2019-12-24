@@ -116,7 +116,7 @@ public final class UserHandler: Handler {
                           completion: completionHandler)
         }
     }
-    
+
     /// Get `user`'s **followers**.
     public func following(user: User.Reference,
                           usersMatchinQuery query: String? = nil,
