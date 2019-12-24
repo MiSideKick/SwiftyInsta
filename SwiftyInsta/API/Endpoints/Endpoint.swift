@@ -198,6 +198,8 @@ public struct Endpoint {
         case blocked = "https://i.instagram.com/api/v1/users/blocked_list/"
         /// Report.
         case report = "https://i.instagram.com/api/v1/users/{userPk}/flag_user/"
+        /// Former usernames.
+        case formerUsernames = "https://i.instagram.com/api/v1/users/{userPk}/former_usernames/"
     }
 
     /// An `enum` providing for `UserTags` endpoints.

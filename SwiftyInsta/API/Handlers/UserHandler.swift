@@ -27,72 +27,6 @@ public final class UserHandler: Handler {
                          completion: completionHandler)
     }
 
-    // Its not working yet.
-    /*func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws {
-     guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-     httpHelper.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
-     if let error = error {
-     print(error.localizedDescription)
-     } else {
-     // find CSRF token
-     let fields = response?.allHeaderFields
-     let cookies = HTTPCookie.cookies(withResponseHeaderFields: fields as! [String : String], for: (response?.url)!)
-     for cookie in cookies {
-     if cookie.name == "csrftoken" {
-     HandlerSettings.shared.user!.csrfToken = cookie.value
-     break
-     }
-     }
-     
-     let content = [
-     "allow_contacts_sync": "true",
-     "sn_result": "API_ERROR:+null",
-     "phone_id": UUID.init().uuidString,
-     "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-     "username": account.username,
-     "first_name": account.firstName,
-     "adid": UUID.init().uuidString,
-     "guid": UUID.init().uuidString,
-     "device_id": RequestMessageModel.generateDeviceId(),
-     "email": account.email,
-     "sn_nonce": "",
-     "force_sign_up_code": "",
-     "waterfall_id": UUID.init().uuidString,
-     "qs_stamp": "",
-     "password": account.password,
-     "gdpr_s": "[0,2,0,null]"
-     ]
-     
-     let encoder = JSONEncoder()
-     let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
-     let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
-     // Creating Post Request Body
-     let signature = "\(hash).\(payload)"
-     let body: [String: Any] = [
-     Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-     Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
-     ]
-     
-     let headers: [String: String] = [
-     "X-IG-App-ID": "567067343352427",
-     Headers.HeaderXGoogleADID: (HandlerSettings.shared.device!.googleAdId?.uuidString)!
-     ]
-     
-     guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-     httpHelper.sendAsync(method: .post, url: try URLs.getCreateAccountUrl(), body: body, header: headers, completion: { (data, response, error) in
-     if error != nil {
-     completion(false)
-     } else {
-     if let data = data {
-     //print(response)
-     print(String(data: data, encoding: .utf8)!)
-     }
-     }
-     })
-     }
-     }
-     }*/
-
     /// Search for users matching the query.
     public func search(forUsersMatching query: String, completionHandler: @escaping (Result<[User], Error>) -> Void) {
         guard let storage = handler.response?.storage else {
@@ -182,7 +116,7 @@ public final class UserHandler: Handler {
                           completion: completionHandler)
         }
     }
-
+    
     /// Get `user`'s **followers**.
     public func following(user: User.Reference,
                           usersMatchinQuery query: String? = nil,
