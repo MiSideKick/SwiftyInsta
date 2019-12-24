@@ -44,9 +44,9 @@ import Combine
 /// A `struct` holding reference to a `Combine`-initiated response.
 public struct HandledResponse {
     /// Request.
-    var request: HandledEndpoint
+    public var request: HandledEndpoint
     /// Response.
-    var response: DynamicResponse
+    public var response: DynamicResponse
 }
 
 @available(iOS 13, *)
