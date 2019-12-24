@@ -21,7 +21,7 @@ public struct Bookmark {
     init(maxId: String?, count counter: Int) {
         precondition(counter > 0, "`count` must be bigger than `0`.")
         self.maxId = maxId
-        self.pagesToLoad = count
+        self.pagesToLoad = counter
     }
     /// Update.
     func next(_ maxId: String?) -> Bookmark? {
