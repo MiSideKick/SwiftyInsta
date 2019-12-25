@@ -143,6 +143,10 @@ public class APIHandler {
             }
         }
     }
+    
+    // MARK: Storage
+    /// Store into `HandlerStorage`.
+    public func store(into storage: HandlerStorage = .default) { storage.add(self) }
 
     // MARK: Helpers
     /// Accessory for `HttpHelper(handler: self)`.

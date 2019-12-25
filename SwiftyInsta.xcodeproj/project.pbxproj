@@ -40,6 +40,10 @@
 		3C4778B5A637A3884C2AB517 /* libPods-SwiftyInsta.macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AFDA16561358A41181270D5A /* libPods-SwiftyInsta.macOS.a */; };
 		488E3DF0AC4BD52FEBE20F90 /* libPods-SwiftyInsta.tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7949891C1E307DEC4B9056B5 /* libPods-SwiftyInsta.tvOS.a */; };
 		A5092854C1851A057470979D /* libPods-SwiftyInsta.watchOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E8254B369E263C08A7F6940 /* libPods-SwiftyInsta.watchOS.a */; };
+		E00016BA23B4134D004C298E /* HandlerStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00016B923B4134D004C298E /* HandlerStorage.swift */; };
+		E00016BB23B4134D004C298E /* HandlerStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00016B923B4134D004C298E /* HandlerStorage.swift */; };
+		E00016BC23B4134D004C298E /* HandlerStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00016B923B4134D004C298E /* HandlerStorage.swift */; };
+		E00016BD23B4134D004C298E /* HandlerStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00016B923B4134D004C298E /* HandlerStorage.swift */; };
 		E004434B2345E4D2000497DF /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E004434A2345E4D2000497DF /* Endpoint.swift */; };
 		E004434C2345E4D2000497DF /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E004434A2345E4D2000497DF /* Endpoint.swift */; };
 		E004434D2345E4D2000497DF /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E004434A2345E4D2000497DF /* Endpoint.swift */; };
@@ -266,6 +270,7 @@
 		A43E70C593FC407F912CFB78 /* Pods-SwiftyInsta.macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.macOS.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.macOS/Pods-SwiftyInsta.macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		AC8920D665B7FA72F9F4823E /* Pods-SwiftyInsta.iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.iOS.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.iOS/Pods-SwiftyInsta.iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		AFDA16561358A41181270D5A /* libPods-SwiftyInsta.macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwiftyInsta.macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E00016B923B4134D004C298E /* HandlerStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HandlerStorage.swift; sourceTree = "<group>"; };
 		E004434A2345E4D2000497DF /* Endpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		E0069548238BD3D100236DBA /* EndpointPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EndpointPath.swift; sourceTree = "<group>"; };
 		E0069552238BEFB500236DBA /* EndpointRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointRepresentable.swift; sourceTree = "<group>"; };
@@ -531,6 +536,7 @@
 			isa = PBXGroup;
 			children = (
 				115F1240217FE98000ED3530 /* APIHandler.swift */,
+				E00016B923B4134D004C298E /* HandlerStorage.swift */,
 			);
 			path = Client;
 			sourceTree = "<group>";
@@ -901,6 +907,7 @@
 				E09FCB8622FED639000E02F1 /* LoginWebViewController.swift in Sources */,
 				E0B9940922F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
 				E07EBC8B22E74DDA0031647F /* AuthenticationHandler.swift in Sources */,
+				E00016BA23B4134D004C298E /* HandlerStorage.swift in Sources */,
 				114B84862187200500F84161 /* ChalllengeForm.swift in Sources */,
 				E0C84E5E2306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
 				1104CD112180644100F855BA /* HTTPHelper.swift in Sources */,
@@ -961,6 +968,7 @@
 				E006E3EF22E87EFE002DB4BB /* APIHandler.swift in Sources */,
 				E0D0EF1622F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E3F422E87EFE002DB4BB /* ProfileHandler.swift in Sources */,
+				E00016BB23B4134D004C298E /* HandlerStorage.swift in Sources */,
 				E0B9940F22F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
 				E0069554238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E40622E87EFE002DB4BB /* ChalllengeForm.swift in Sources */,
@@ -1017,6 +1025,7 @@
 				E006E43C22E87EFF002DB4BB /* APIHandler.swift in Sources */,
 				E0D0EF1722F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E44122E87EFF002DB4BB /* ProfileHandler.swift in Sources */,
+				E00016BC23B4134D004C298E /* HandlerStorage.swift in Sources */,
 				E0B9941022F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
 				E0069555238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E45322E87EFF002DB4BB /* ChalllengeForm.swift in Sources */,
@@ -1073,6 +1082,7 @@
 				E006E48922E87F00002DB4BB /* APIHandler.swift in Sources */,
 				E0D0EF1822F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E48E22E87F00002DB4BB /* ProfileHandler.swift in Sources */,
+				E00016BD23B4134D004C298E /* HandlerStorage.swift in Sources */,
 				E0B9941122F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
 				E0069556238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E4A022E87F00002DB4BB /* ChalllengeForm.swift in Sources */,
