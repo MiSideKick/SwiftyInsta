@@ -30,11 +30,12 @@ public class HandledEndpoint {
 
 public extension HandledEndpoint {
     /// Fetch results at `Endpoint`.
-    func fetch(completion: @escaping (Result<DynamicResponse, Error>) -> Void) {
+    func fetch(delay: ClosedRange<TimeInterval>? = nil, completion: @escaping (Result<DynamicResponse, Error>) -> Void) {
         guard let handler = handler else { return completion(.failure(GenericError.weakObjectReleased)) }
         handler.requests.request(DynamicResponse.self,
                                  method: .get,
                                  endpoint: endpoint,
+                                 delay: delay,
                                  process: { $0 },
                                  completion: completion)
     }
@@ -56,7 +57,7 @@ public extension HandledEndpoint {
     /// Fetch results at `Endpoint`.
     func fetch() -> Future<HandledResponse, Error> {
         return Future { resolve in
-            self.fetch { resolve($0.map { .init(request: self, response: $0) }) }
+            self.fetch(delay: 0...0) { resolve($0.map { .init(request: self, response: $0) }) }
         }
     }
 }
