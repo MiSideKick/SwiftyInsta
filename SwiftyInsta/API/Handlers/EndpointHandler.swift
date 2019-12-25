@@ -9,7 +9,9 @@ import Foundation
 
 public extension EndpointRepresentable {
     /// Handle.
-    func handle(with handler: APIHandler) -> HandledEndpoint { .init(endpoint: self, handler: handler) }
+    func handle(with handler: APIHandler) -> HandledEndpoint {
+        return .init(endpoint: self, handler: handler)
+    }
 }
 
 /// A `struct` combining an endpoint and a the `APIHandler`.
@@ -53,9 +55,25 @@ public struct HandledResponse {
 public extension HandledEndpoint {
     /// Fetch results at `Endpoint`.
     func fetch() -> Future<HandledResponse, Error> {
-        Future { resolve in
+        return Future { resolve in
             self.fetch { resolve($0.map { .init(request: self, response: $0) }) }
         }
+    }
+}
+
+@available(iOS 13, *)
+public extension Publisher where Output == DynamicResponse {
+    /// Ignore errors.
+    func ignoreErrors() -> AnyPublisher<Output, Never> {
+        return self.catch { _ in Just(.none) }.eraseToAnyPublisher()
+    }
+    /// Get `User`.
+    func user() -> AnyPublisher<User?, Failure> {
+        return map { User(rawResponse: $0) }.eraseToAnyPublisher()
+    }
+    /// Get `Media`.
+    func media() -> AnyPublisher<Media?, Failure> {
+        return map { Media(rawResponse: $0) }.eraseToAnyPublisher()
     }
 }
 #endif
