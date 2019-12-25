@@ -60,6 +60,10 @@ public extension HandledEndpoint {
             self.fetch(delay: 0...0) { resolve($0.map { .init(request: self, response: $0) }) }
         }
     }
+    /// Fetch response at `Endpoint`.
+    func response() -> AnyPublisher<DynamicResponse, Error> {
+        return fetch().map(\.response).eraseToAnyPublisher()
+    }
 }
 
 @available(iOS 13, *)
