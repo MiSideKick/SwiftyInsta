@@ -27,7 +27,7 @@ public class HandledEndpoint {
         self.handler = handler
     }
     /// Ranki.
-    func rank() -> HandledEndpoint {
+    public func rank() -> HandledEndpoint {
         guard let handler = handler, let token = handler.response?.storage?.rankToken else { return self }
         return .init(endpoint: endpoint.rank(token), handler: handler)
     }
