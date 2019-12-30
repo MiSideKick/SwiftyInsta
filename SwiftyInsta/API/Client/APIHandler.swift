@@ -172,3 +172,20 @@ public class APIHandler {
     /// `StoryHandler` endpoints manager.
     public private(set) lazy var stories: StoryHandler = .init(handler: self)
 }
+
+#if canImport(Combine)
+import Combine
+
+@available(iOS 13, *)
+public extension APIHandler {
+    /// Authenticate using `Combine`.
+    func authenticate(with request: Authentication.Request) -> Future<APIHandler, Error> {
+        Future { [self] resolve in
+            self.authenticate(with: request) {
+                resolve($0.map { $0.1 })
+            }
+        }
+    }
+}
+#endif
+
