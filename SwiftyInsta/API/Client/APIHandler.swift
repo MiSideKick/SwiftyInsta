@@ -22,7 +22,7 @@ public class Handler {
 }
 
 /// The `Instagram Private API` client.
-public class APIHandler {
+public class APIHandler: Hashable {
     /// A struct used to initialize `APIHandler`s.
     public struct Settings {
         /// A struct used to manage `DispatchQueue`s.
@@ -171,6 +171,10 @@ public class APIHandler {
     public private(set) lazy var profile: ProfileHandler = .init(handler: self)
     /// `StoryHandler` endpoints manager.
     public private(set) lazy var stories: StoryHandler = .init(handler: self)
+    
+    // MARK: Hashable
+    public static func == (lhs: APIHandler, rhs: APIHandler) -> Bool { return lhs.user?.identity == rhs.user?.identity }
+    public func hash(into hasher: inout Hasher) { hasher.combine(user?.identity) }
 }
 
 #if canImport(Combine)

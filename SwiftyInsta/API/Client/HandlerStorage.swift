@@ -13,30 +13,36 @@ public class HandlerStorage {
     public static let `default` = HandlerStorage()
     
     /// A strongly referenced array of authenticated `APIHandler`s.
-    public var handlers: [APIHandler] = []
+    public var handlers: Set<APIHandler> = []
     
     // MARK: Restore
     /// Restore from a list of persisted `Authentication.Response` keys.
-    public func restore(from keys: [String]) {
-        keys.compactMap { Authentication.Response.persisted(with: $0) }
-            .forEach {
-                APIHandler().authenticate(with: .cache($0)) { [weak self] in
-                    (try? $0.get()).flatMap { self?.add($0.1) }
-                }
+    public func restore(from keys: [String], completion: @escaping () -> Void) {
+        // obtain authentication responses.
+        let responses = keys.compactMap(Authentication.Response.persisted)
+        // authenticate and complete.
+        var fetched = 0
+        self.handlers = Set(responses.map {
+            let handler = APIHandler()
+            handler.authenticate(with: .cache($0)) { _ in
+                // increment and notify.
+                fetched += 1
+                if fetched == responses.count { completion() }
             }
+            return handler
+        })
     }
     
     // MARK: Change
+    @discardableResult
     /// Add `APIHandler` to storage.
-    public func add(_ handler: APIHandler) {
-        guard handler.user != nil,
-            !handlers.contains(where: { $0.user?.identity == handler.user?.identity }) else { return }
-        // add to handlers.
-        handlers.append(handler)
+    public func add(_ handler: APIHandler) -> Bool {
+        return handler.user != nil && handlers.insert(handler).inserted
     }
-    /// Remote `APIHandler` from storage.
-    public func remove(_ handler: APIHandler) {
-        guard let index = handlers.firstIndex(where: { $0.user?.identity == handler.user?.identity }) else { return }
-        handlers.remove(at: index)
+    
+    @discardableResult
+    /// Remove `APIHandler` from storage.
+    public func remove(_ handler: APIHandler) -> APIHandler? {
+        return handlers.remove(handler)
     }
 }
