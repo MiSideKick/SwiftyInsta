@@ -34,9 +34,11 @@ class InstagramSession {
         static let validateResponse = Options(rawValue: 1 << 0)
         /// Deliver on response queue.
         static let deliverOnResponseQueue = Options(rawValue: 1 << 1)
+        /// Start on request queue.
+        static let startOnRequestQueue = Options(rawValue: 1 << 2)
 
         /// Default.
-        static let `default`: Options = [.validateResponse, .deliverOnResponseQueue]
+        static let `default`: Options = [.validateResponse, .deliverOnResponseQueue, .startOnRequestQueue]
     }
 
     /// The referenced handler.
@@ -129,6 +131,7 @@ class InstagramSession {
               url: Result { try endpoint.url() },
               body: body,
               headers: headers ?? [:],
+              options: options,
               delay: delay) { [weak self] in
                 guard let handler = self?.handler else { return completion(.failure(GenericError.weakObjectReleased)) }
                 // consider response.
@@ -174,38 +177,65 @@ class InstagramSession {
                url: URL,
                body: Body? = nil,
                headers: [String: String] = [:],
+               options: Options = .default,
                delay: ClosedRange<Double>? = nil,
                completionHandler: @escaping CompletionHandler) {
-        fetch(method: method, url: Result { url }, body: body, headers: headers, delay: delay, completionHandler: completionHandler)
+        fetch(method: method,
+              url: Result { url },
+              body: body,
+              headers: headers,
+              options: options,
+              delay: delay,
+              completionHandler: completionHandler)
     }
     /// Fetch async resource.
     func fetch(method: Method,
                url: Result<URL, Error>,
                body: Body? = nil,
                headers: [String: String] = [:],
+               options: Options = .default,
                delay: ClosedRange<Double>? = nil,
                completionHandler: @escaping CompletionHandler) {
-        guard let content = try? url.get() else { return completionHandler(.failure(GenericError.invalidUrl)) }
         // prepare for requesting `url`.
+        guard let content = try? url.get() else { return completionHandler(.failure(GenericError.invalidUrl)) }
         let delay = (delay ?? handler.settings.delay).flatMap { Double.random(in: $0) } ?? 0
-        handler.settings.queues.request.asyncAfter(deadline: .now()+delay) { [weak self] in
-            guard let me = self, let handler = me.handler else {
-                return completionHandler(.failure(GenericError.custom("`weak` reference was released.")))
+        let request = URLRequest(url: content, method: body == nil ? method : .post, handler: handler)
+            .headers(headers)
+            .body(body)
+        // fetch.
+        if options == .startOnRequestQueue {
+            handler.settings.queues.request.asyncAfter(deadline: .now()+delay) { [weak self] in
+                guard let self = self else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
+                self.fetch(request: request, shouldWorkOnQueue: true, completion: completionHandler)
             }
-            // obtain the request.
-            let request = URLRequest(url: content, method: body == nil ? method : .post, handler: handler)
-                .headers(headers)
-                .body(body)
-            // start task.
-            handler.settings.session.dataTask(with: request) { data, response, error in
-                handler.settings.queues.working.async {
-                    switch error {
-                    case let error?: completionHandler(.failure(error))
-                    default: completionHandler(.success((data, response as? HTTPURLResponse)))
-                    }
-                }
-            }.resume()
+        } else {
+            fetch(request: request, shouldWorkOnQueue: false, completion: completionHandler)
         }
+    }
+    
+    // MARK: Private
+    /// Fetch request.
+    private func fetch(request: URLRequest,
+                       shouldWorkOnQueue: Bool,
+                       completion: @escaping CompletionHandler) {
+        guard let handler = handler else {
+            return completion(.failure(GenericError.weakObjectReleased))
+        }
+        // return completion.
+        func complete(data: Data?, response: URLResponse?, error: Error?) {
+            switch error {
+            case let error?: completion(.failure(error))
+            default: completion(.success((data, response as? HTTPURLResponse)))
+            }
+        }
+        // start task.
+        handler.settings.session.dataTask(with: request) { data, response, error in
+            if shouldWorkOnQueue {
+                handler.settings.queues.working.async { complete(data: data, response: response, error: error) }
+            } else {
+                complete(data: data, response: response, error: error)
+            }
+        }.resume()
     }
 }
 

@@ -185,6 +185,10 @@
 		E09C54452345E687004D4F4F /* StoryLocationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09C54422345E687004D4F4F /* StoryLocationResponse.swift */; };
 		E09C54462345E687004D4F4F /* StoryLocationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09C54422345E687004D4F4F /* StoryLocationResponse.swift */; };
 		E09FCB8622FED639000E02F1 /* LoginWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09FCB8522FED639000E02F1 /* LoginWebViewController.swift */; };
+		E0B237E523BDFFBB0069D0E6 /* HandledEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B237E423BDFFBA0069D0E6 /* HandledEndpoint.swift */; };
+		E0B237E623BDFFBB0069D0E6 /* HandledEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B237E423BDFFBA0069D0E6 /* HandledEndpoint.swift */; };
+		E0B237E723BDFFBB0069D0E6 /* HandledEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B237E423BDFFBA0069D0E6 /* HandledEndpoint.swift */; };
+		E0B237E823BDFFBB0069D0E6 /* HandledEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B237E423BDFFBA0069D0E6 /* HandledEndpoint.swift */; };
 		E0B993FE22F398860036BFA5 /* DynamicResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B993FD22F398860036BFA5 /* DynamicResponse.swift */; };
 		E0B993FF22F398860036BFA5 /* DynamicResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B993FD22F398860036BFA5 /* DynamicResponse.swift */; };
 		E0B9940022F398860036BFA5 /* DynamicResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B993FD22F398860036BFA5 /* DynamicResponse.swift */; };
@@ -297,6 +301,7 @@
 		E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedResponse.swift; sourceTree = "<group>"; };
 		E09C54422345E687004D4F4F /* StoryLocationResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryLocationResponse.swift; sourceTree = "<group>"; };
 		E09FCB8522FED639000E02F1 /* LoginWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWebViewController.swift; sourceTree = "<group>"; };
+		E0B237E423BDFFBA0069D0E6 /* HandledEndpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HandledEndpoint.swift; sourceTree = "<group>"; };
 		E0B993FD22F398860036BFA5 /* DynamicResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicResponse.swift; sourceTree = "<group>"; };
 		E0B9940222F3A8450036BFA5 /* StoryResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryResponse.swift; sourceTree = "<group>"; };
 		E0B9940822F3B7DB0036BFA5 /* UserResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserResponse.swift; sourceTree = "<group>"; };
@@ -523,6 +528,7 @@
 				E00CBC3423B9FB11002AEAD5 /* EndpointPublisher.swift */,
 				E0069548238BD3D100236DBA /* EndpointPath.swift */,
 				E0069557238BF97300236DBA /* EndpointQuery.swift */,
+				E0B237E423BDFFBA0069D0E6 /* HandledEndpoint.swift */,
 			);
 			path = Endpoints;
 			sourceTree = "<group>";
@@ -896,6 +902,7 @@
 				E0D0EF1A22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
 				115F1244217FEA4400ED3530 /* Headers.swift in Sources */,
 				E0B993FE22F398860036BFA5 /* DynamicResponse.swift in Sources */,
+				E0B237E523BDFFBB0069D0E6 /* HandledEndpoint.swift in Sources */,
 				110B3F9B21A2CE4D0019523A /* Extensions.swift in Sources */,
 				11AE440321A99CD400BD9EFB /* CommentHandler.swift in Sources */,
 				E004434B2345E4D2000497DF /* Endpoint.swift in Sources */,
@@ -940,6 +947,7 @@
 				E006E40422E87EFE002DB4BB /* StatusResponse.swift in Sources */,
 				E006E3F522E87EFE002DB4BB /* UserHandler.swift in Sources */,
 				E006E42922E87EFE002DB4BB /* UploadMediaModel.swift in Sources */,
+				E0B237E623BDFFBB0069D0E6 /* HandledEndpoint.swift in Sources */,
 				E0C84E5F2306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
 				E0069559238BF97300236DBA /* EndpointQuery.swift in Sources */,
 				E006E43422E87EFE002DB4BB /* PaginationHelper.swift in Sources */,
@@ -998,6 +1006,7 @@
 				E006E45122E87EFF002DB4BB /* StatusResponse.swift in Sources */,
 				E006E44222E87EFF002DB4BB /* UserHandler.swift in Sources */,
 				E006E47622E87EFF002DB4BB /* UploadMediaModel.swift in Sources */,
+				E0B237E723BDFFBB0069D0E6 /* HandledEndpoint.swift in Sources */,
 				E0C84E602306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
 				E006955A238BF97300236DBA /* EndpointQuery.swift in Sources */,
 				E006E48122E87EFF002DB4BB /* PaginationHelper.swift in Sources */,
@@ -1056,6 +1065,7 @@
 				E006E49E22E87F00002DB4BB /* StatusResponse.swift in Sources */,
 				E006E48F22E87F00002DB4BB /* UserHandler.swift in Sources */,
 				E006E4C322E87F00002DB4BB /* UploadMediaModel.swift in Sources */,
+				E0B237E823BDFFBB0069D0E6 /* HandledEndpoint.swift in Sources */,
 				E0C84E612306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
 				E006955B238BF97300236DBA /* EndpointQuery.swift in Sources */,
 				E006E4CE22E87F00002DB4BB /* PaginationHelper.swift in Sources */,

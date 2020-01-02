@@ -1,51 +1,30 @@
 //
 //  EndpointHandler.swift
-//  
+//
 //
 //  Created by Stefano Bertagno on 24/12/2019.
 //
 
 import Foundation
 
-public extension EndpointRepresentable {
-    /// Handle.
-    func handle(with handler: APIHandler) -> HandledEndpoint {
-        return .init(endpoint: self, handler: handler)
-    }
-}
-
-/// A `struct` combining an endpoint and a the `APIHandler`.
-public class HandledEndpoint {
-    /// The endpoint.
-    var endpoint: EndpointRepresentable
-    /// The handler.
-    weak var handler: APIHandler?
-
-    /// Init.
-    init(endpoint: EndpointRepresentable, handler: APIHandler) {
-        self.endpoint = endpoint
-        self.handler = handler
-    }
-    /// Ranki.
-    public func rank() -> HandledEndpoint {
-        guard let handler = handler, let token = handler.response?.storage?.rankToken else { return self }
-        return .init(endpoint: endpoint.rank(token), handler: handler)
-    }
-}
-
+// MARK: Generic
+/// Fetch `HandledEndpoint`s.
 public extension HandledEndpoint {
-    /// Fetch results at `Endpoint`.
-    func fetch(delay: ClosedRange<TimeInterval>? = nil, completion: @escaping (Result<DynamicResponse, Error>) -> Void) {
+    /// Fetch results at `endpoint` using `handler`.
+    func fetch(delay: ClosedRange<TimeInterval>? = nil,
+               completion: @escaping (Result<DynamicResponse, Error>) -> Void) {
         guard let handler = handler else { return completion(.failure(GenericError.weakObjectReleased)) }
         handler.requests.request(DynamicResponse.self,
                                  method: .get,
                                  endpoint: endpoint,
+                                 options: .validateResponse,
                                  delay: delay,
                                  process: { $0 },
                                  completion: completion)
     }
 }
 
+// MARK: Combine
 #if canImport(Combine)
 import Combine
 
@@ -55,19 +34,47 @@ public struct HandledResponse {
     public var request: HandledEndpoint
     /// Response.
     public var response: DynamicResponse
+    
+    /// Next.
+    func next(_ nextId: String?) -> HandledEndpoint? {
+        guard let nextId = nextId else { return nil }
+        return .init(endpoint: request.endpoint.next(nextId), reference: request.reference)
+    }
 }
 
 @available(iOS 13, *)
 public extension HandledEndpoint {
     /// Fetch results at `Endpoint`.
-    func fetch() -> Future<HandledResponse, Error> {
-        return Future { resolve in
-            self.fetch(delay: 0...0) { resolve($0.map { .init(request: self, response: $0) }) }
-        }
+    func fetch() -> AnyPublisher<HandledResponse, Error> {
+        return Just(self)
+            .setFailureType(to: Error.self)
+            .flatMap { endpoint in
+                Future { resolve in
+                    endpoint.fetch(delay: 0...0, completion: resolve)
+                }.map { .init(request: endpoint, response: $0) }
+            }
+            .eraseToAnyPublisher()
     }
     /// Fetch response at `Endpoint`.
     func response() -> AnyPublisher<DynamicResponse, Error> {
         return fetch().map(\.response).eraseToAnyPublisher()
+    }
+}
+
+@available(iOS 13, *)
+public extension Publisher where Output == HandledResponse, Failure == Error {
+    /// Paginate. Return `nil` in `nextId` to stop pagination.
+    func next(_ nextId: @escaping (Output) -> String?) -> AnyPublisher<Output, Failure> {
+        return flatMap { output -> AnyPublisher<Output, Failure> in
+            guard let next = nextId(output), let request = output.next(next) else {
+                return Just(output).setFailureType(to: Failure.self).eraseToAnyPublisher()
+            }
+            // fetch next page.
+            return Just(output)
+                .setFailureType(to: Failure.self)
+                .append(Deferred { request.fetch().next(nextId) })
+                .eraseToAnyPublisher()
+        }.eraseToAnyPublisher()
     }
 }
 
@@ -77,6 +84,7 @@ public extension Publisher where Output == DynamicResponse {
     func ignoreErrors() -> AnyPublisher<Output, Never> {
         return self.catch { _ in Just(.none) }.eraseToAnyPublisher()
     }
+        
     /// Get `User`.
     func user() -> AnyPublisher<User?, Failure> {
         return map { User(rawResponse: $0) }.eraseToAnyPublisher()

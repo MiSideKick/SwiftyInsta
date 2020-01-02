@@ -41,6 +41,8 @@ public extension EndpointRepresentable {
 
     /// Appendding `query`.
     func appending(_ path: String) -> EndpointRepresentable! { return representation.appending(path) }
+    /// Appending `APIHandler`.
+    func handle(with handler: APIHandler) -> HandledEndpoint! { return HandledEndpoint(endpoint: self, handler: handler) }
 }
 
 /// A `protocol` describing what it counts as an endpoint.
