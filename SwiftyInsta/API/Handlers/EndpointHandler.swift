@@ -49,9 +49,11 @@ public extension HandledEndpoint {
         return Just(self)
             .setFailureType(to: Error.self)
             .flatMap { endpoint in
-                Future { resolve in
-                    endpoint.fetch(delay: 0...0, completion: resolve)
-                }.map { .init(request: endpoint, response: $0) }
+                Deferred {
+                    Future { resolve in
+                        endpoint.fetch(delay: 0...0, completion: resolve)
+                    }.map { .init(request: endpoint, response: $0) }
+                }
             }
             .eraseToAnyPublisher()
     }
@@ -64,7 +66,7 @@ public extension HandledEndpoint {
 @available(iOS 13, *)
 public extension Publisher where Output == HandledResponse, Failure == Error {
     /// Paginate. Return `nil` in `nextId` to stop pagination.
-    func next(_ nextId: @escaping (Output) -> String?) -> AnyPublisher<Output, Failure> {
+    func next(delay: TimeInterval = 1, _ nextId: @escaping (Output) -> String?) -> AnyPublisher<Output, Failure> {
         return flatMap { output -> AnyPublisher<Output, Failure> in
             guard let next = nextId(output), let request = output.next(next) else {
                 return Just(output).setFailureType(to: Failure.self).eraseToAnyPublisher()
@@ -72,7 +74,8 @@ public extension Publisher where Output == HandledResponse, Failure == Error {
             // fetch next page.
             return Just(output)
                 .setFailureType(to: Failure.self)
-                .append(Deferred { request.fetch().next(nextId) })
+                .delay(for: .seconds(delay), scheduler: RunLoop.main)
+                .append(Deferred { request.fetch().next(delay: delay, nextId) })
                 .eraseToAnyPublisher()
         }.eraseToAnyPublisher()
     }
@@ -82,7 +85,7 @@ public extension Publisher where Output == HandledResponse, Failure == Error {
 public extension Publisher where Output == DynamicResponse {
     /// Ignore errors.
     func ignoreErrors() -> AnyPublisher<Output, Never> {
-        return self.catch { _ in Just(.none) }.eraseToAnyPublisher()
+        return self.catch { _ in Empty() }.eraseToAnyPublisher()
     }
         
     /// Get `User`.
