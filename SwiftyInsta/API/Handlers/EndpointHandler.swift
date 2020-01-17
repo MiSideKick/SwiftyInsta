@@ -75,7 +75,7 @@ public extension Publisher where Output == HandledResponse, Failure == Error {
             return Just(output)
                 .setFailureType(to: Failure.self)
                 .delay(for: .seconds(delay), scheduler: RunLoop.main)
-                .append(Deferred { request.fetch().next(delay: delay, nextId) })
+                .append(request.fetch().next(delay: delay, nextId))
                 .eraseToAnyPublisher()
         }.eraseToAnyPublisher()
     }
