@@ -47,6 +47,8 @@ public enum DynamicResponse: Equatable {
     case dictionary([String: DynamicResponse])
     /// A `String`.
     case string(String)
+    /// A non-matching key.
+    case invalidKey
     /// An empty value.
     case none
 
@@ -107,7 +109,7 @@ public enum DynamicResponse: Equatable {
         case .dictionary(let dictionary): return dictionary.mapValues { $0.any }
         case .number(let number): return number
         case .string(let string): return string
-        case .none: return NSNull()
+        case .none, .invalidKey: return NSNull()
         }
     }
 
@@ -173,7 +175,7 @@ public enum DynamicResponse: Equatable {
     /// Interrogate `.dictionary`.
     public subscript(dynamicMember member: String) -> DynamicResponse {
         guard case let .dictionary(dictionary) = self else { return .none }
-        return dictionary[member] ?? .none
+        return dictionary.keys.contains(member) ? (dictionary[member] ?? .none) : .invalidKey
     }
 
     /// Access `index`-th item in `.array`.
@@ -185,6 +187,6 @@ public enum DynamicResponse: Equatable {
     /// Interrogate `.dictionary`.
     public subscript(key: String) -> DynamicResponse {
         guard case let .dictionary(dictionary) = self else { return .none }
-        return dictionary[key] ?? .none
+        return dictionary.keys.contains(key) ? (dictionary[key] ?? .none) : .invalidKey
     }
 }
